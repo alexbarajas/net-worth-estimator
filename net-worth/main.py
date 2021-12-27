@@ -5,16 +5,17 @@ from accounts.ameritrade import AmeritradePortfolio
 from accounts.schwab import SchwabPortfolio
 from accounts.gemini import GeminiPortfolio
 from accounts.bitcoin import Bitcoin
+from data.plot import Plot
 
+# set up the imported modules
 celsiusPortfolio = CelsiusPortfolio()
 ameritradePortfolio = AmeritradePortfolio()
 schwabPortfolio = SchwabPortfolio()
 geminiPortfolio = GeminiPortfolio()
 bitcoin = Bitcoin()
-
-today = date.today()
-
 filename = "data/portfolio_data.json"
+plot = Plot(filename)
+today = date.today()
 
 accounts = {
     str(today): {
@@ -61,3 +62,4 @@ with open(filename, 'r+') as data:
         data.write(json.dumps(json_data))
         data.truncate()
 
+plot.setup_plot()

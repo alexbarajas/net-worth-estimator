@@ -11,7 +11,7 @@ filename = "portfolio_data.json"
 
 
 class Plot:
-    def __init__(self, filename):
+    def __init__(self, filename=filename):
         self.filename = filename
         # let's style the plot up
         style.use("dark_background")
@@ -35,9 +35,15 @@ class Plot:
         self.ys = values
 
         # allows the arrays to be used in vector multiplication
-        self.xs_np = np.array(self.xs)
+        # self.xs_np = np.array(self.xs)  # NOT USED YET
         self.xs_dates_np = np.array(self.xs_dates)
-        self.ys_np = np.array(self.ys)
+        # self.ys_np = np.array(self.ys)  # NOT USED YET
+        m, b = self.best_fit_slope_and_intercept(xs_dates_np=self.xs_dates_np, ys=self.ys)
+        for year in range(1, 6):
+            self.xs_dates.append(self.xs_dates[-1] + 5)
+            self.ys.append(m * self.xs_dates[-1] + b)
+            self.xs.append(self.xs[-1] + dt.timedelta(5))
+        self.xs_dates_np = np.array(self.xs_dates)
 
     # provides the best fit slope and y-intercept
     def best_fit_slope_and_intercept(self, xs_dates_np, ys):
@@ -62,11 +68,9 @@ class Plot:
         plt.xlabel("Date")
         plt.ylabel("Net Worth")
 
-        # gets the regression line
+        # gets the regression line and plots it
         regression_line = [(m * x) + b for x in self.xs_dates_np]
-
-        # adds the regression line to the plot
-        plt.plot(self.xs, regression_line)
+        plt.plot(self.xs, regression_line, color="red")
 
         # shows the plot
         plt.show()

@@ -11,7 +11,7 @@ filename = "portfolio_data.json"
 
 
 class Plot:
-    def __init__(self, filename=filename):
+    def __init__(self, filename):
         self.filename = filename
         # let's style the plot up
         style.use("dark_background")

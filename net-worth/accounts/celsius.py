@@ -1,6 +1,9 @@
 import requests
+from accounts.bitcoin import Bitcoin
 
-url = "https://wallet-api.celsius.network/wallet/BTC/balance"
+bitcoin = Bitcoin()
+
+url = "https://wallet-api.celsius.network/wallet/balance"
 
 payload = {}
 API_KEY = "API KEY"  # gotten from the app
@@ -16,11 +19,18 @@ class CelsiusPortfolio:
         self.response = requests.request("GET", url, headers=headers, data=payload)
         self.celsius_data = self.response.json()  # this spits out a list
         # print(self.response.text)  # gives data as a str
+        self.celsius_assets = {}
 
     def amountInBTC(self):
-        btcAmount = self.celsius_data["amount"]  # json gives data as a dict
-        return btcAmount
+        btcAmount = self.celsius_data["balance"]["btc"]  # json gives data as a dict
+        return float(btcAmount)
 
     def amountInUSD(self):
-        usdAmount = self.celsius_data["amount_in_usd"]
-        return round(float(usdAmount), 2)
+        usdAmount = self.amountInBTC() * bitcoin.getBTCPrice()
+        return round(usdAmount, 2)
+
+    def getAssets(self):
+        for asset, amount in self.celsius_data["balance"].items():
+            if float(amount) > 0:
+                self.celsius_assets[asset] = float(amount)
+        return self.celsius_assets

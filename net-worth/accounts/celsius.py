@@ -15,7 +15,7 @@ class CelsiusPortfolio:
     def __init__(self):
         self.response = requests.request("GET", url, headers=headers, data=payload)
         self.celsius_data = self.response.json()  # this spits out a list
-        # print(response.text)  # gives data as a str
+        # print(self.response.text)  # gives data as a str
 
     def amountInBTC(self):
         btcAmount = self.celsius_data["amount"]  # json gives data as a dict

@@ -4,7 +4,7 @@ import base64
 import json
 import hmac
 import hashlib
-from .bitcoin import Bitcoin
+from accounts.bitcoin import Bitcoin
 
 bitcoin = Bitcoin()
 

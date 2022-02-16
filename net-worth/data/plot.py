@@ -21,13 +21,16 @@ class Plot:
         values = []
 
         with open(self.filename) as jsonFile:
-            # make 2 lists because dictionaries in Python are unordered
-            data = json.load(jsonFile)
-            # add the dates and their values to separate lists
-            for i in range(len(data)):
-                dates.append(list(data[i].keys())[0])
-                values.append(sum(list(data[i][dates[i]].values())))
-            jsonFile.close()
+            try:
+                # make 2 lists because dictionaries in Python are unordered
+                data = json.load(jsonFile)
+                # add the dates and their values to separate lists
+                for i in range(len(data)):
+                    dates.append(list(data[i].keys())[0])
+                    values.append(sum(list(data[i][dates[i]].values())))
+                jsonFile.close()
+            except:
+                print("There is no plot, try again")
 
         # sets up the arrays for the plot
         self.xs = [dt.datetime.strptime(d, "%Y-%m-%d").date() for d in dates]
@@ -76,4 +79,4 @@ class Plot:
         plt.show()
 
 
-# Plot(filename).setup_plot()
+# Plot(filename).setup_plot()  # comment this out when running main

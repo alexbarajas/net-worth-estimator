@@ -23,6 +23,7 @@ class SchwabPortfolio:
 
         self.response = requests.get(STOCK_ENDPOINT, headers=self.headers, params=self.querystring)
         self.stock_data = self.response.json()
+        self.schwab_assets = {}
 
     def stockList(self):
         stocks = ""
@@ -39,3 +40,16 @@ class SchwabPortfolio:
             schwabAmount += symbol_value
         return schwabAmount
 
+    def getAssets(self):
+        for _ in range(len(self.stock_data["quoteResponse"]["result"])):
+            data = self.stock_data["quoteResponse"]["result"][_]
+            symbol = data["symbol"]
+            price = data["regularMarketPrice"]
+            self.schwab_assets[symbol] = self.stock_list[symbol] * price
+        return self.schwab_assets
+
+
+# print(SchwabPortfolio().schwabTotal())
+# print(SchwabPortfolio().stock_data["quoteResponse"]["result"])
+# print(len(SchwabPortfolio().stock_data["quoteResponse"]["result"]))
+# print(SchwabPortfolio().getAssets())

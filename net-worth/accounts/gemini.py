@@ -4,13 +4,12 @@ import base64
 import json
 import hmac
 import hashlib
-from accounts.bitcoin import Bitcoin
+from accounts.crypto import Crypto
 
-bitcoin = Bitcoin()
+cryptocurrency = Crypto()
 
 base_url = "https://api.gemini.com"
 endpoint = "/v1/balances"  # to get the account balances
-# endpoint = "/v1/balances/earn"  # to get the earn balances
 API_KEY = "API KEY"
 SECRET_API = "SECRET API".encode()
 NONCE = str(int(time.time() * 10000000))  # this number will always increase, and never be repeated
@@ -35,17 +34,41 @@ class GeminiPortfolio:
         self.response = requests.post(url=base_url + endpoint, headers=headers)
         self.gemini_data = self.response.json()
         # print(self.gemini_data)
+        self.gemini_assets = {}
 
-    def btcAmountInBTC(self):
-        btcQuantityBTC = self.gemini_data[1]["available"]
-        btcAmountBTC = float(btcQuantityBTC)
-        return btcAmountBTC
+    def cryptoAmountInCrypto(self, crypto):
+        cryptoAmountCrypto = 0
+        for asset in range(len(self.gemini_data)):
+            if self.gemini_data[asset]["currency"] == crypto.upper():
+                cryptoQuantityCrypto = self.gemini_data[asset]["amount"]
+                cryptoAmountCrypto = float(cryptoQuantityCrypto)
+        return cryptoAmountCrypto
 
-    def btcAmountInUSD(self):
-        btcQuantityUSD = self.gemini_data[1]["available"]
-        btcAmountUSD = float(btcQuantityUSD) * bitcoin.getBTCPrice()
-        return btcAmountUSD
+    def cryptoAmountInUSD(self, crypto):
+        cryptoAmountUSD = 0
+        for asset in range(len(self.gemini_data)):
+            if self.gemini_data[asset]["currency"] == crypto.upper():
+                cryptoQuantityUSD = self.gemini_data[asset]["amount"]
+                cryptoAmountUSD = float(cryptoQuantityUSD) * cryptocurrency.getCryptoPrice("btc")
+        return round(cryptoAmountUSD, 2)
 
     def cashAmountInUSD(self):
-        cashAmountUSD = float(self.gemini_data[0]["available"])
-        return cashAmountUSD
+        cashAmountUSD = 0
+        for asset in range(len(self.gemini_data)):
+            if self.gemini_data[asset]["currency"] == "USD":
+                cashAmountUSD = float(self.gemini_data[asset]["amount"])
+        return round(cashAmountUSD, 2)
+
+    def getAssets(self):
+        for i in range(len(self.gemini_data)):
+            if self.gemini_data[i]["currency"] == "USD":
+                continue
+            else:
+                self.gemini_assets[self.gemini_data[i]["currency"].upper()] = float(self.gemini_data[i]["amount"])
+        return self.gemini_assets
+
+# print(GeminiPortfolio().cryptoAmountInCrypto("btc"), "btc in btc")
+# print(GeminiPortfolio().cryptoAmountInUSD("btc"), "btc in usd")
+# print(GeminiPortfolio().cashAmountInUSD(), "usd in usd")
+# print(GeminiPortfolio().gemini_data)
+# print(GeminiPortfolio().getAssets())

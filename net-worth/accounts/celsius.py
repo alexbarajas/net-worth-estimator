@@ -1,7 +1,7 @@
 import requests
-from accounts.bitcoin import Bitcoin
+from accounts.crypto import Crypto
 
-bitcoin = Bitcoin()
+cryptocurrency = Crypto()
 
 url = "https://wallet-api.celsius.network/wallet/balance"
 
@@ -21,16 +21,28 @@ class CelsiusPortfolio:
         # print(self.response.text)  # gives data as a str
         self.celsius_assets = {}
 
-    def amountInBTC(self):
-        btcAmount = self.celsius_data["balance"]["btc"]  # json gives data as a dict
-        return float(btcAmount)
+    def amountInCrypto(self, crypto):
+        cryptoAmount = self.celsius_data["balance"][crypto]  # json gives data as a dict
+        return float(cryptoAmount)
 
-    def amountInUSD(self):
-        usdAmount = self.amountInBTC() * bitcoin.getBTCPrice()
+    def amountInUSD(self, crypto):
+        usdAmount = self.amountInCrypto(crypto) * cryptocurrency.getCryptoPrice(crypto)
         return round(usdAmount, 2)
 
     def getAssets(self):
         for asset, amount in self.celsius_data["balance"].items():
             if float(amount) > 0:
-                self.celsius_assets[asset] = float(amount)
+                self.celsius_assets[asset.upper()] = float(amount)
         return self.celsius_assets
+
+    def amountAssets(self):
+        celsiusAssetAmount = 0
+        for asset, amount in self.getAssets().items():
+            celsiusAssetAmount += amount * Crypto().getCryptoPrice(asset)
+        return celsiusAssetAmount
+
+
+# print(CelsiusPortfolio().amountInCrypto("btc"))
+# print(CelsiusPortfolio().amountInUSD("btc"))
+# print(CelsiusPortfolio().getAssets())
+# print(CelsiusPortfolio().amountAssets())
